@@ -12,8 +12,9 @@ http://guides.rubyonrails.org/getting_started.html
 `rails db:migrate` - run the migration *locally*
 `rails db:migrate RAILS_ENV=production` - run the migration in production  
 
-## Key Rails Methods
-`form_for` - form builder for templates in views. See example in `app/views/articles/new.html.erb`
+## Key Rails Methods & Helpers
+`form_for` - form builder for templates in views. See example in `app/views/articles/new.html.erb`.  
+`link_to` - creates a hyperlink based on text to display and where to go. See example in `app/views/welcome/index.html.erb`
 
 ## Key Concepts/Definitions
 **routes** - connects incoming requests to controllers and actions
@@ -129,3 +130,81 @@ end
 </p>
 ```
 ### Listing All Articles
+* We need to get a listing of all the articles. To do so, we need to check the routes again. `rails routes`. Look for **articles GET***
+```
+       Prefix Verb   URI Pattern                  Controller#Action
+welcome_index GET    /welcome/index(.:format)     welcome#index
+     articles GET    /articles(.:format)          articles#index
+              POST   /articles(.:format)          articles#create
+  new_article GET    /articles/new(.:format)      articles#new
+ edit_article GET    /articles/:id/edit(.:format) articles#edit
+      article GET    /articles/:id(.:format)      articles#show
+              PATCH  /articles/:id(.:format)      articles#update
+              PUT    /articles/:id(.:format)      articles#update
+              DELETE /articles/:id(.:format)      articles#destroy
+         root GET    /                            welcome#index
+```
+* Add the corresponding index action (`articles#index`) for that route (`articles GET`) in the `ArticlesController`. This corresponding action is the `def index`... see below:
+```ruby
+class ArticlesController < ApplicationController
+  def index     # add this method for the index action
+    @articles = Article.all
+  end
+ 
+  def show
+    @article = Article.find(params[:id])
+  end
+ 
+  def new
+  end
+  # more code below ...
+  ```
+
+  * Add the view for this action in `app/views/articles/index.html.erb`
+
+### Adding Links
+* Since we can now *create, show, and list* articles, we can add some links for navigation. Edit `app/views/welcome/index.html`:
+```
+<h1>Hello, Rails!</h1>
+<%= link_to 'My Blog', controller: 'articles' %>
+```
+
+### Adding Some Validation
+* Edit `app/models/article.rb`
+```ruby
+class Article < ApplicationRecord
+  validates :title, presence: true, length: { minumum: 5 }
+end
+```
+* These changes will ensure that all articles have a title that is at least 5 characters long. Rails can validate a variety of conditions in a model, including the presence or uniqueness of columns, their format, and the existence of associated objects. See [Active Record Validations](http://guides.rubyonrails.org/active_record_validations.html)
+
+* Update `ArticlesController`
+```ruby
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.all
+  end
+  def show
+    @article = Article.find(params[:id])
+  end
+
+  def new
+    @article = Article.new
+  end
+
+  def create
+    @article = Article.new(article_params)
+
+    if @article.save
+      redirect_to @article
+    else
+      render 'new'
+    end
+  end
+
+  private
+    def article_params
+      params.require(:article).permit(:title, :text)
+    end
+end
+```
