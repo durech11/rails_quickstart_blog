@@ -14,7 +14,8 @@ http://guides.rubyonrails.org/getting_started.html
 
 ## Key Rails Methods & Helpers
 `form_for` - form builder for templates in views. See example in `app/views/articles/new.html.erb`.  
-`link_to` - creates a hyperlink based on text to display and where to go. See example in `app/views/welcome/index.html.erb`
+`link_to` - creates a hyperlink based on text to display and where to go. See example in `app/views/welcome/index.html.erb`  
+`pluralize` - a rails helper that takes a number and a string as its arguments. If the number is greater than one, the string will be automatically pluralized.
 
 ## Key Concepts/Definitions
 **routes** - connects incoming requests to controllers and actions
@@ -208,3 +209,72 @@ class ArticlesController < ApplicationController
     end
 end
 ```
+
+* Make sure the user cannot submit an article without a title. Modify `app/views/articles/new.html.erb`
+
+### Updating Articles
+* Add an `edit` action to the `ArticlesController`. This is generally placed between the `new` and `create` actions.
+```ruby
+def new
+    @article = Article.new
+  end
+
+  def edit                                  # add the edit action
+    @article = Article.find(params[:id])
+  end
+
+  def create
+    @article = Article.new(article_params)
+
+    if @article.save
+      redirect_to @article
+    else
+      render 'new'
+    end
+  end
+  ```
+
+* Create `app/views/articles/edit.html.erb`
+```ruby
+<h1>Editing Article</h1>
+
+<%= form_for :article, url: article_path(@article), method: :patch do |f| %>
+
+  <% if @article.errors.any? %>
+    <div id="error_explanation">
+      <h2>
+        <%= pluralize(@article.errors.count, "error") %>
+        prohibited this article from being saved:
+      </h2>
+      <ul>
+        <% @article.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+<p>
+  <%= f.label :title %><br>
+  <%= f.text_field :title %>
+</p>
+
+<p>
+  <%= f.label :text %><br>
+  <%= f.text_area :text %>
+</p>
+
+<p>
+  <%= f.submit %>
+</p>
+
+<% end %>
+
+<%= link_to 'Back', articles_path %>
+```
+
+* The `method: :patch` option tells Rails that we want this form to be submitted via the `PATCH HTTP` method which is used to **update** resources according to the `REST` protocol.
+
+* Create an `update` action in `app/controllers/articles_controller.rb`. Add it between the `create` action and `private method`
+
+* Show a link to the `edit` action in the list of all the articles. Add it to `app/views/articles/index.html`
