@@ -278,3 +278,14 @@ def new
 * Create an `update` action in `app/controllers/articles_controller.rb`. Add it between the `create` action and `private method`
 
 * Show a link to the `edit` action in the list of all the articles. Add it to `app/views/articles/index.html`
+
+* Add the `edit` action to the `app/views/articles/show.html.erb` as well...
+
+### Using Partials to clean up duplication in views
+* make a new file `app/views/articles/_form.html.erb`
+* edit the following files: `new.html.erb`, `edit.html.erb` and use the `render `form` helper.
+
+* Add the destroy action in the `articles_controller`
+* Add the `Destroy` link to `app/views/articles/index.html.erb`
+
+### 6. Adding a Second Model
