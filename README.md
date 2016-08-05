@@ -288,4 +288,8 @@ def new
 * Add the destroy action in the `articles_controller`
 * Add the `Destroy` link to `app/views/articles/index.html.erb`
 
-### 6. Adding a Second Model
+### Adding a Second Model
+* Generate the second model, the comments: `rails generate model Comment commenter:string body:text article:references`
+* run the migrations: `rails db:migrate`
+
+### Associating Models
