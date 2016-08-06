@@ -306,3 +306,6 @@ end
 * edit `app/views/articles/show.html.erb` and add the comment fields.
 
 ### Refactoring
+* Add more partials for less code
+
+### 9.1 Basic Authentication
