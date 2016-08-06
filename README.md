@@ -293,3 +293,16 @@ def new
 * run the migrations: `rails db:migrate`
 
 ### Associating Models
+* Edit `app/models/article.rb` to contain 'has_many :comments'
+* Add a route for Comments in `config/routes.rb`
+```ruby
+resources :articles do
+  resources :comments
+end
+```
+
+### Generate a Comments Controller
+* `rails generate controller Comments`
+* edit `app/views/articles/show.html.erb` and add the comment fields.
+
+### Refactoring
